@@ -1,0 +1,30 @@
+{
+	"Notifications": {
+		"Data": [{
+			"id": "2",
+			"weekDay": "Monday",
+			"Title": "Monday",
+			"Body": "Content For Monday"
+		}, {
+			"id": "3",
+			"weekDay": "Tuesday",
+			"Title": "Tuesday",
+			"Body": "Content For Tuesday"
+		}, {
+			"id": "4",
+			"weekDay": "WednesDay",
+			"Title": "WednesDay",
+			"Body": "Content For WednesDay"
+		}, {
+			"id": "5",
+			"weekDay": "Thursday",
+			"Title": "Thursday",
+			"Body": "Content For Thursday"
+		}, {
+			"id": "6",
+			"weekDay": "Friday",
+			"Title": "Friday",
+			"Body": "Content For Friday"
+		}]
+	}
+}
