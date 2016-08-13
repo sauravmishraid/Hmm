@@ -47,7 +47,7 @@
             }
             else{
                 diffFromWeekdays<0?(diffFromWeekdays+=7):diffFromWeekdays;
-            }
+            } 
         }
             break;
     }
