@@ -34,6 +34,26 @@ static ScheduleNotification* scheduleNotificationSingleton = nil;
         });
     return scheduleNotificationSingleton;
 }
+//Seek permission from user to post local Notificaiton.
+-(void)seekPermissionForLocalNotification
+{
+    if([UIApplication instancesRespondToSelector:@selector(registerUserNotificationSettings:)]) {
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert) categories:nil];
+        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+    }
+}
+//check if access has been granted to the OS from the user to send notifs
+-(BOOL)isAllowedToSendNotification{
+    if ([[UIApplication sharedApplication] respondsToSelector:@selector(currentUserNotificationSettings)]){
+        UIUserNotificationSettings *grantedSettings = [[UIApplication sharedApplication] currentUserNotificationSettings];
+        return  grantedSettings.types==UIUserNotificationTypeNone?NO:YES;
+        /*if (grantedSettings.types == UIUserNotificationTypeNone)
+        {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"app-settings:"]];
+        }*/
+    }
+        return NO;
+}
 
 //Schedule Notifications on all weekdays.
 -(void)scheduleLocalNotificationsOnWeekday

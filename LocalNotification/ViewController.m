@@ -7,8 +7,9 @@
 //
 
 #import "ViewController.h"
-
+#import "ScheduleNotification.h"
 @interface ViewController ()
+@property (weak, nonatomic) IBOutlet UISwitch *notificationSwitch;
 
 @end
 
@@ -16,70 +17,37 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    /* Do any additional setup after loading the view, typically from a nib.
-        for (int day=WeekdayMonday; day<=WeekdayFriday; day++) {
-        NSDate *nextWeekDate=[self calculateNextWeekDay:day];
-       [self scheduleNotificationWithDate:nextWeekDate];
-    
-    }*/
-    
-    [[[UIApplication sharedApplication] scheduledLocalNotifications] enumerateObjectsUsingBlock:^(UILocalNotification *notification, NSUInteger idx, BOOL *stop) {
-        NSLog(@"Notification %lu: %@",(unsigned long)idx, notification);
-    }];
-    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(appplicationIsActive:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+    self.notificationSwitch.on=[[ScheduleNotification sharedManager]isAllowedToSendNotification];
+
+}
+-(void)appplicationIsActive:(NSNotification *)recievedNotification{
+    self.notificationSwitch.on=[[ScheduleNotification sharedManager]isAllowedToSendNotification];
 }
 
-/*-(NSDate *)calculateNextWeekDay:(Weekday)weekDay
+-(void)viewWillDisappear:(BOOL)animated
 {
-    NSDateComponents * todayComponent=[self getDateCompoenentsFromCurrentDate];
-    long todayWeekday=todayComponent.weekday;
-    long diffFromWeekdays= (weekDay-todayWeekday);
-    switch (todayWeekday) {
-        case (WeekdaySunday):
-            break;
-        case (WeekdaySaturday):
-            diffFromWeekdays=weekDay;
-            break;
-        default:{
-            if(diffFromWeekdays==0){
-                NSInteger currentHour=[todayComponent hour];
-                (currentHour>=10)?(diffFromWeekdays=7):(diffFromWeekdays=0);
-            }
-            else{
-                diffFromWeekdays<0?(diffFromWeekdays+=7):diffFromWeekdays;
-            } 
+    [super viewWillDisappear:animated];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationDidBecomeActiveNotification
+                                                  object:nil];
+}
+- (IBAction)switchChanged:(UISwitch *)sender {
+    if(sender.isOn){
+            if([[ScheduleNotification sharedManager]isAllowedToSendNotification]){
+            [[ScheduleNotification  sharedManager] scheduleLocalNotificationsOnWeekday];
         }
-            break;
+        else{
+            sender.on=NO;
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"app-settings:"]];
+        }
     }
-    NSDateComponents *newComponent=[todayComponent copy];
-    [newComponent setDay:todayComponent.day+diffFromWeekdays];
-    [newComponent setTimeZone:[NSTimeZone defaultTimeZone]];
-    [newComponent setMinute:0];
-    [newComponent setHour:10];
-    [newComponent setSecond:0];
-    NSCalendar *currentCalendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
-    NSDate *schedulingDate=[currentCalendar dateFromComponents:newComponent];
-    NSLog(@"*******Date : %@  ******",
-          [schedulingDate descriptionWithLocale:[NSLocale systemLocale]]);
-
-    return schedulingDate;
-}
-
--(NSDateComponents *)getDateCompoenentsFromCurrentDate
-{
-
-    NSCalendar *currentCalendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
-    NSDateComponents *todayComponent =[currentCalendar components:(NSCalendarUnitYear|NSCalendarUnitDay|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitSecond|NSCalendarUnitWeekday) fromDate:[NSDate date]];
-    return todayComponent;
-}
-
--(void)scheduleNotificationWithDate:(NSDate *)scheduledDate
-{
-    
-}*/
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    else{
+          [[ScheduleNotification  sharedManager]cancelAllNotifications];
+    }
 }
 
 @end

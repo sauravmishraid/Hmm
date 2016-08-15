@@ -12,9 +12,12 @@
 
 //Get Singleton
 +(instancetype)sharedManager;
+//Seek Permission For Local Notification.
+-(void)seekPermissionForLocalNotification;
 //Schedule NotificationsOnWeekday.
 -(void)scheduleLocalNotificationsOnWeekday;
 //Cancel All Notifications
 -(void)cancelAllNotifications;
-
+//check if the user has allowed to notifications.
+-(BOOL)isAllowedToSendNotification;
 @end
